@@ -1,6 +1,6 @@
 {
-    "name": "@demox-labs/aleo-wallet-adapter-avail",
-    "version": "0.0.12",
+    "name": "@avail-wallet/aleo-wallet-adapter-avail",
+    "version": "0.0.13",
     "description": "Aleo wallet adapter for the Avail Wallet.",
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
