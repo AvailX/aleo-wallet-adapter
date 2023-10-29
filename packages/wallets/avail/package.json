@@ -1,10 +1,10 @@
 {
     "name": "@demox-labs/aleo-wallet-adapter-avail",
-    "version": "0.0.1",
+    "version": "0.0.12",
     "description": "Aleo wallet adapter for the Avail Wallet.",
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
-    "repository": "https://github.com/demox-labs/aleo-wallet-adapter",
+    "repository": "https://github.com/AvailX/aleo-wallet-adapter",
     "author": "Avail Team",
     "license": "MIT",
     "private": false,

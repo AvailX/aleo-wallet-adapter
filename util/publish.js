@@ -6,7 +6,8 @@ const directories = [
     './packages/core/base',
     './packages/core/react',
     './packages/ui',
-    './packages/wallets/leo'
+    './packages/wallets/leo',
+    './pakcages/wallets/avail'
 ];
 
 const commands = [
