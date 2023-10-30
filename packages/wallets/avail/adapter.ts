@@ -80,9 +80,23 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
         this._publicKey = null;
         this._decryptPermission = DecryptPermission.NoDecrypt;
 
+        //get avail wallet api by posting message to avail wallet
+        window.parent.postMessage({type:'request_wallet_api'},'*');
+        window.addEventListener("message", (event) => {
+            if (event.data.type === "response_wallet_api") {
+                const api  = event.data.api as AvailWallet;
+
+                console.log("Avail Wallet API received");
+        
+                // Set the wallet in your AvailWalletAdapter instance
+                this.wallet = api;
+            }
+        })
+     
+
         if (this._readyState !== WalletReadyState.Unsupported) {
             scopePollingDetectionStrategy(() => {
-                if (window?.availWallet || window?.avail) {
+                if (this.wallet) {
                     this._readyState = WalletReadyState.Installed;
                     this.emit('readyStateChange', this._readyState);
                     return true;
@@ -112,7 +126,7 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
         this._readyState = readyState;
     }
     
-    setWallet(wallet: AvailWallet | null) {
+   set wallet(wallet: AvailWallet) {
         this._wallet = wallet;
     }
 
@@ -358,3 +372,5 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
         }
     }
 }
+
+
