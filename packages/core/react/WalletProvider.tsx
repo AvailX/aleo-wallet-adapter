@@ -203,10 +203,11 @@ export const WalletProvider: FC<WalletProviderProps> = ({
             // Clear the selected wallet
             setName(null);
 
+            
             if (typeof window !== 'undefined') {
                 window.open(adapter.url, '_blank');
             }
-
+            
             throw handleError(new WalletNotReadyError());
         }
 

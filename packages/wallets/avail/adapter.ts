@@ -54,6 +54,7 @@ export interface AvailWalletAdapterConfig {
 
 export const AvailWalletName = 'Avail Wallet' as WalletName<'Avail Wallet'>;
 
+
 export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
     name = AvailWalletName;
     url = 'https://avail.global';
@@ -69,6 +70,8 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
         typeof window === 'undefined' || typeof document === 'undefined'
             ? WalletReadyState.Unsupported
             : WalletReadyState.NotDetected;
+
+
 
     constructor({ appName = 'sample'} : AvailWalletAdapterConfig = {}) {
         super();
@@ -108,6 +111,10 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
     set readyState(readyState) {
         this._readyState = readyState;
     }
+    
+    setWallet(wallet: AvailWallet | null) {
+        this._wallet = wallet;
+    }
 
     async decrypt(cipherText: string, tpk?: string, programId?: string, functionName?: string, index?: number) {
         try {
@@ -141,7 +148,7 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
         try {
             const wallet = this._wallet;
             if (!wallet || !this.publicKey) throw new WalletNotConnectedError();
-
+            
             try {
                 const result = await wallet.requestRecords(program);
                 return result.records;
