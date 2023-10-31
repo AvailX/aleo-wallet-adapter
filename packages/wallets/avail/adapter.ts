@@ -81,6 +81,37 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
         this._publicKey = null;
         this._decryptPermission = DecryptPermission.NoDecrypt;
 
+   
+    
+        const initializeWallet = async () => {
+
+            return new Promise<void>((resolve) => {
+                const onWalletApiReceived = (event) => {
+                    if (event.data.type === 'response_wallet_api') {
+                        const serialized_api = event.data.api;
+                        const api = JSON.parse(JSON.stringify(serialized_api)) as AvailWallet;
+                        if (api === undefined) {
+                            throw new WalletConnectionError();
+                        } else {
+                            console.log('Avail Wallet API received: ' + api);
+                            resolve();
+                            this.emit('readyStateChange', WalletReadyState.Installed);
+                        }
+                    }
+                };
+    
+                window.addEventListener('message', onWalletApiReceived);
+    
+                window.parent.postMessage({ type: 'request_wallet_api' }, '*');
+    
+                return () => {
+                    window.removeEventListener('message', onWalletApiReceived);
+                };
+            });}
+    
+        initializeWallet();
+        console.log("here 2");
+        /*
         let flag = false;
 
         window.addEventListener('load', () => {
@@ -119,6 +150,7 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
                 return false;
             });
         }
+        */
     }
 
     get publicKey() {
