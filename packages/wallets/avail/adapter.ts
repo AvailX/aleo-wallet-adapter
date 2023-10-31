@@ -66,10 +66,11 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
     private _wallet: AvailWallet | null;
     private _publicKey: string | null;
     private _decryptPermission: string;
-    private _readyState: WalletReadyState =
-        typeof window === 'undefined' 
+    private _readyState: WalletReadyState =WalletReadyState.Installed;
+      
+    /*typeof window === 'undefined' 
             ? WalletReadyState.Unsupported
-            : WalletReadyState.Loadable;
+            : WalletReadyState.Loadable;*/
 
 
 
