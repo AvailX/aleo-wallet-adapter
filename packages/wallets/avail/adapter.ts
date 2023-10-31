@@ -84,9 +84,12 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
         window.parent.postMessage({type:'request_wallet_api'},'*');
         window.addEventListener("message", (event) => {
             if (event.data.type === "response_wallet_api") {
-                const api  = event.data.api as AvailWallet;
+                const serialized_api  = event.data.api;
 
-                console.log("Avail Wallet API received");
+                // Deserialize the API
+                const api = JSON.parse(JSON.stringify(serialized_api)) as AvailWallet;
+
+                console.log("Avail Wallet API received: " + api);
         
                 // Set the wallet in your AvailWalletAdapter instance
                 this.wallet = api;
