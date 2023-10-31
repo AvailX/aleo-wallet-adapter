@@ -46,7 +46,7 @@ export interface AvailWindow extends Window {
     avail?: AvailWallet;
 }
 
-declare const window: AvailWindow;
+
 
 export interface AvailWalletAdapterConfig {
     appName?: string
@@ -66,11 +66,11 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
     private _wallet: AvailWallet | null;
     private _publicKey: string | null;
     private _decryptPermission: string;
-    private _readyState: WalletReadyState =WalletReadyState.Installed;
-      
-    /*typeof window === 'undefined' 
-            ? WalletReadyState.Unsupported
-            : WalletReadyState.Loadable;*/
+    private _readyState: WalletReadyState =
+    typeof window.parent === 'undefined' || typeof document === 'undefined'
+    ? WalletReadyState.Unsupported
+    : WalletReadyState.NotDetected;
+
 
 
 
@@ -81,27 +81,11 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
         this._publicKey = null;
         this._decryptPermission = DecryptPermission.NoDecrypt;
 
-        //get avail wallet api by posting message to avail wallet
-        /*
-        window.parent.postMessage({type:'request_wallet_api'},'*');
-        window.addEventListener("message", (event) => {
-            if (event.data.type === "response_wallet_api") {
-                const serialized_api  = event.data.api;
-
-                // Deserialize the API
-                const api = JSON.parse(JSON.stringify(serialized_api)) as AvailWallet;
-
-                console.log("Avail Wallet API received: " + api);
-        
-                // Set the wallet in your AvailWalletAdapter instance
-                this.wallet = api;
-            }
-        })
-     
-
+        console.log("Avail Wallet Adapter loading...");
         if (this._readyState !== WalletReadyState.Unsupported) {
             scopePollingDetectionStrategy(() => {
-                if (this.wallet) {
+                if ( (window.parent as AvailWindow)?.availWallet ||  (window.parent as AvailWindow)?.avail) {
+                    console.log("Avail Wallet Adapter detected!");
                     this._readyState = WalletReadyState.Installed;
                     this.emit('readyStateChange', this._readyState);
                     return true;
@@ -109,8 +93,6 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
                 return false;
             });
         }
-        */
-       //this._readyState = WalletReadyState.Installed;
     }
 
     get publicKey() {
@@ -133,11 +115,6 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
         this._readyState = readyState;
     }
     
-    /*
-   set wallet(wallet: AvailWallet) {
-        this._wallet = wallet;
-    }
-     */
 
     async decrypt(cipherText: string, tpk?: string, programId?: string, functionName?: string, index?: number) {
         try {
@@ -323,8 +300,8 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
             this._connecting = true;
 
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const wallet = window.availWallet! || window.avail!;
-
+            const wallet = (window.parent as AvailWindow)?.availWallet! ||  (window.parent as AvailWindow)?.avail!;
+ {/* 
             window.parent.postMessage({type:'request_wallet_api'},'*');
             window.addEventListener("message", (event) => {
                 if (event.data.type === "response_wallet_api") {
@@ -341,7 +318,8 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
                     this._wallet = api;
                 }
             })
-            {/* 
+            */}
+          
             try {
                 await wallet.connect(decryptPermission, network, programs);
                 if (!wallet?.publicKey) {
@@ -350,9 +328,9 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
                 this._publicKey = wallet.publicKey!;
             } catch (error: any) {
                 throw new WalletConnectionError(error?.message, error);
-            }*/}
+            }
 
-            //this._wallet = wallet;
+            this._wallet = wallet;
             this._decryptPermission = decryptPermission;
 
             this.emit('connect', this._publicKey);
