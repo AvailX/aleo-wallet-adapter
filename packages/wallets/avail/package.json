@@ -1,6 +1,6 @@
 {
     "name": "@avail-wallet/aleo-wallet-adapter-avail",
-    "version": "0.0.19",
+    "version": "0.0.19.1",
     "description": "Aleo wallet adapter for the Avail Wallet.",
     "module": "dist/index.js",
     "types": "dist/index.d.ts",

@@ -67,9 +67,9 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
     private _publicKey: string | null;
     private _decryptPermission: string;
     private _readyState: WalletReadyState =
-        typeof window === 'undefined' || typeof document === 'undefined'
+        typeof window === 'undefined' 
             ? WalletReadyState.Unsupported
-            : WalletReadyState.NotDetected;
+            : WalletReadyState.Loadable;
 
 
 
@@ -81,6 +81,7 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
         this._decryptPermission = DecryptPermission.NoDecrypt;
 
         //get avail wallet api by posting message to avail wallet
+        /*
         window.parent.postMessage({type:'request_wallet_api'},'*');
         window.addEventListener("message", (event) => {
             if (event.data.type === "response_wallet_api") {
@@ -107,6 +108,8 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
                 return false;
             });
         }
+        */
+       //this._readyState = WalletReadyState.Installed;
     }
 
     get publicKey() {
@@ -129,9 +132,11 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
         this._readyState = readyState;
     }
     
+    /*
    set wallet(wallet: AvailWallet) {
         this._wallet = wallet;
     }
+     */
 
     async decrypt(cipherText: string, tpk?: string, programId?: string, functionName?: string, index?: number) {
         try {
@@ -312,12 +317,30 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
         try {
             if (this.connected || this.connecting) return;
             if (this._readyState !== WalletReadyState.Installed) throw new WalletNotReadyError();
+            //if wallet not installed redirect to avail.global
 
             this._connecting = true;
 
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const wallet = window.availWallet! || window.avail!;
 
+            window.parent.postMessage({type:'request_wallet_api'},'*');
+            window.addEventListener("message", (event) => {
+                if (event.data.type === "response_wallet_api") {
+                    const serialized_api  = event.data.api;
+    
+                    // Deserialize the API
+                    const api = JSON.parse(JSON.stringify(serialized_api)) as AvailWallet;
+                    if (api === undefined) {
+                        throw new WalletConnectionError();
+                    }
+                    console.log("Avail Wallet API received: " + api);
+            
+                    // Set the wallet in your AvailWalletAdapter instance
+                    this._wallet = api;
+                }
+            })
+            {/* 
             try {
                 await wallet.connect(decryptPermission, network, programs);
                 if (!wallet?.publicKey) {
@@ -326,9 +349,9 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
                 this._publicKey = wallet.publicKey!;
             } catch (error: any) {
                 throw new WalletConnectionError(error?.message, error);
-            }
+            }*/}
 
-            this._wallet = wallet;
+            //this._wallet = wallet;
             this._decryptPermission = decryptPermission;
 
             this.emit('connect', this._publicKey);
