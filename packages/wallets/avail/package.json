@@ -1,6 +1,6 @@
 {
     "name": "@avail-wallet/aleo-wallet-adapter-avail",
-    "version": "0.0.195",
+    "version": "0.0.2113",
     "description": "Aleo wallet adapter for the Avail Wallet.",
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -10,6 +10,7 @@
     "private": false,
     "dependencies": {
         "@demox-labs/aleo-wallet-adapter-base": "^0.0.20",
+        "@demox-labs/aleo-wallet-adapter-react": "^0.0.19",
         "nanoid": "^4.0.0",
         "react": "^18.2.0"
     },

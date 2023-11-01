@@ -9,6 +9,13 @@
   dependencies:
     eventemitter3 "^4.0.7"
 
+"@demox-labs/aleo-wallet-adapter-react@^0.0.19":
+  version "0.0.19"
+  resolved "https://registry.npmjs.org/@demox-labs/aleo-wallet-adapter-react/-/aleo-wallet-adapter-react-0.0.19.tgz"
+  integrity sha512-np00dDXFXBA/okLyaHbyJfCsTgCr33ltBPy3L1+1TaL69c6WUuOCn5pNA6V+MM1DYWRUZmyNG4nbKPj8u3jhzQ==
+  dependencies:
+    "@demox-labs/aleo-wallet-adapter-base" "^0.0.20"
+
 "@discoveryjs/json-ext@^0.5.0":
   version "0.5.7"
   resolved "https://registry.npmjs.org/@discoveryjs/json-ext/-/json-ext-0.5.7.tgz"

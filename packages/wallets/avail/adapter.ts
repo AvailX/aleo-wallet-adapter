@@ -66,7 +66,7 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
     private _wallet: AvailWallet | null;
     private _publicKey: string | null;
     private _decryptPermission: string;
-    private _readyState: WalletReadyState =
+     _readyState: WalletReadyState =
     typeof window.parent === 'undefined' || typeof document === 'undefined'
     ? WalletReadyState.Unsupported
     : WalletReadyState.NotDetected;
@@ -80,11 +80,13 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
         this._wallet = null;
         this._publicKey = null;
         this._decryptPermission = DecryptPermission.NoDecrypt;
-
-   
-    
+        console.log("here 1 -> provider or not");
+        
+ 
+    /*
         const initializeWallet = async () => {
 
+            
             return new Promise<void>((resolve) => {
                 const onWalletApiReceived = (event) => {
                     if (event.data.type === 'response_wallet_api') {
@@ -111,6 +113,8 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
     
         initializeWallet();
         console.log("here 2");
+        */
+
         /*
         let flag = false;
 
@@ -173,6 +177,56 @@ export class AvailWalletAdapter extends BaseMessageSignerWalletAdapter {
         this._readyState = readyState;
     }
     
+    async checkAvailWallet() {
+        console.log('Avail Wallet Adapter loading...');
+
+        const initializePromise = new Promise<void>((resolve) => {
+            const eventListener = (event) => {
+                if (event.data.type === 'response_wallet_api') {
+                    const serialized_api = event.data.api;
+
+                    // Deserialize the API
+                    const api = JSON.parse(JSON.stringify(serialized_api)) as AvailWallet;
+
+                    if (api === undefined) {
+                        throw new WalletConnectionError();
+                    } else {
+                        console.log('Avail Wallet API received:', api);
+
+                        // Set the wallet in your AvailWalletAdapter instance
+
+                        this._readyState = WalletReadyState.Installed;
+                        
+                        // Emit 'readyStateChange' event only when the API is received
+                        this.emit('readyStateChange', WalletReadyState.Installed);
+
+                        // Remove the event listener after handling the response
+                        window.removeEventListener('message', eventListener);
+
+                        scopePollingDetectionStrategy(() => {
+                            if (this._readyState === WalletReadyState.Installed) {
+                                console.log('Avail Wallet Adapter detected!');
+                                return true;
+                            }
+                            return false;
+                        });
+
+                        // Resolve the initialization promise
+                        resolve();
+                    }
+                }
+            };
+
+            // Add the event listener
+            window.addEventListener('message', eventListener);
+
+            // Send the request
+            window.parent.postMessage({ type: 'request_wallet_api' }, '*');
+        });
+
+        // Wait for the initialization promise to complete
+        await initializePromise;
+    }
 
     async decrypt(cipherText: string, tpk?: string, programId?: string, functionName?: string, index?: number) {
         try {
